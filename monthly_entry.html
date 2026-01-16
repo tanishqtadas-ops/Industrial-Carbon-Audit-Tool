@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Monthly Carbon Data Entry</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f7fb;
+}
+
+header{
+  background:#1f78d1;
+  color:#fff;
+  padding:16px;
+}
+
+.container{
+  padding:20px;
+  max-width:900px;
+  margin:auto;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 6px 14px rgba(0,0,0,.1);
+}
+
+h2{
+  margin-top:0;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+
+input, select{
+  width:100%;
+  padding:8px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th, td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+
+th{
+  background:#f0f4f8;
+}
+
+button{
+  margin-top:20px;
+  padding:12px 20px;
+  background:#1f78d1;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+button:hover{
+  background:#155fa0;
+}
+
+/* ================================
+   Monthly Page Smooth Animations
+================================ */
+
+/* Page fade-in */
+body {
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+/* Card slide-up */
+.card {
+  animation: slideUp 0.7s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Card hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+}
+
+/* Form elements smooth focus */
+input, select {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #1f78d1;
+  box-shadow: 0 0 0 2px rgba(31,120,209,0.2);
+}
+
+/* Button smooth hover */
+button {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+/* Table row soft appearance */
+tbody tr {
+  animation: fadeRow 0.4s ease-in-out;
+}
+
+.home-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  padding: 5px 22px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.home-btn:hover {
+  background: white;
+  color: #1f78d1; /* Matches your header's primary blue */
+  border-color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeRow {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <!-- <h1>Monthly Carbon Emission Data Entry</h1> -->
+  <div style="display: flex; flex-direction: column; align-items: flex-start; max-width: 900px; margin: auto; gap: 8px;">
+    <span style="font-weight: bold; font-size: 22px;">Monthly Carbon Data Entry</span>
+    <a href="index.html" class="home-btn">Home</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="card">
+
+    <h2>Enter Monthly Activity Data</h2>
+
+    <!-- Month -->
+    <div class="form-group">
+      <label for="month">Select Month</label>
+      <input type="month" id="month" required>
+    </div>
+
+    <!-- Industry -->
+    <div class="form-group">
+      <label for="industry">Select Industry</label>
+      <select id="industry" onchange="renderActivities(); loadCompanies();">
+        <option value="textile">Textile</option>
+        <option value="chemical">Chemical</option>
+        <option value="car-care">Car-Care Product</option>
+      </select>
+    </div>
+
+    <!-- Company -->
+    <div class="form-group">
+      <label for="company">Select Company</label>
+      <select id="company" onchange="handleCompanySelect()"></select>
+    </div>
+
+
+    <!-- Activity Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Activity</th>
+          <th>Unit</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody id="activityBody">
+        <tr>
+          <td>Electricity</td>
+          <td>kWh</td>
+          <td><input type="number" id="Electricity" placeholder="Enter value"></td>
+        </tr>
+        <tr>
+          <td>Diesel</td>
+          <td>Litre</td>
+          <td><input type="number" id="Diesel"></td>
+        </tr>
+        <tr>
+          <td>Steam</td>
+          <td>Kg</td>
+          <td><input type="number" id="Steam"></td>
+        </tr>
+        <tr>
+          <td>Water</td>
+          <td>m³</td>
+          <td><input type="number" id="Water"></td>
+        </tr>
+        <tr>
+          <td>TextileWaste</td>
+          <td>Kg</td>
+          <td><input type="number" id="TextileWaste"></td>
+        </tr>
+        <tr>
+          <td>TransportDiesel</td>
+          <td>Km</td>
+          <td><input type="number" id="TransportDiesel"></td>
+        </tr>
+        <tr>
+          <td>EmployeeCommute</td>
+          <td>Km</td>
+          <td><input type="number" id="EmployeeCommute"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button onclick="generateCSV()">Save & View Dashboard</button>
+
+  </div>
+</div>
+
+<script>
+    const industryActivities = {
+  textile: [
+    { name: "Electricity", unit: "kWh" },
+    { name: "Diesel", unit: "Litre" },
+    { name: "LPG", unit: "Kg" },
+    { name: "Steam", unit: "Kg" },
+    { name: "TextileWaste", unit: "Kg" }
+  ],
+  chemical: [
+    { name: "Electricity", unit: "kWh" },
+    { name: "NaturalGas", unit: "SCM" },
+    { name: "Solvent", unit: "Kg" },
+    { name: "HazardousWaste", unit: "Kg" }
+  ],
+  "car-care": [
+    { name: "Electricity", unit: "kWh" },
+    { name: "CompressedAir", unit: "Unit" },
+    { name: "FilterWaste", unit: "Kg" }
+  ]
+};
+
+const defaultCompanies = {
+  textile: ["Garware Technical Fibres Limited", "Century Enka Ltd", "Banthia Enterprises"],
+  chemical: ["Tata Chemicals", "Pidilite", "UPL Limited"],
+  "car-care": ["Jopasu India Pvt. Ltd."]
+};
+
+function loadCompanies() {
+  const industry = document.getElementById("industry").value;
+  const companySelect = document.getElementById("company");
+
+  let savedCompanies = JSON.parse(localStorage.getItem("companies")) || {};
+  let companies = savedCompanies[industry] || defaultCompanies[industry] || [];
+
+  companySelect.innerHTML = "";
+
+  companies.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    companySelect.appendChild(opt);
+  });
+
+  const addOpt = document.createElement("option");
+  addOpt.value = "__add__";
+  addOpt.textContent = "➕ Add New Company";
+  companySelect.appendChild(addOpt);
+}
+
+function handleCompanySelect() {
+  const companySelect = document.getElementById("company");
+
+  if (companySelect.value === "__add__") {
+    const newCompany = prompt("Enter new company name:");
+    if (!newCompany) {
+      loadCompanies();
+      return;
+    }
+
+    const industry = document.getElementById("industry").value;
+    let savedCompanies = JSON.parse(localStorage.getItem("companies")) || {};
+
+    if (!savedCompanies[industry]) {
+      savedCompanies[industry] = [];
+    }
+
+    savedCompanies[industry].push(newCompany);
+    localStorage.setItem("companies", JSON.stringify(savedCompanies));
+
+    loadCompanies();
+    companySelect.value = newCompany;
+  }
+}
+
+
+function renderActivities() {
+  const industry = document.getElementById("industry").value;
+  const tbody = document.getElementById("activityBody");
+  tbody.innerHTML = "";
+
+  industryActivities[industry].forEach(act => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${act.name}</td>
+      <td>${act.unit}</td>
+      <td><input type="number" id="${act.name}" placeholder="Enter value"></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function generateCSV(){
+  const industry = document.getElementById("industry").value;
+const activities = industryActivities[industry].map(a => a.name);
+
+  let csv = "Activity,Quantity\n";
+
+  activities.forEach(act=>{
+    const val = document.getElementById(act).value;
+    if(val && !isNaN(val) && val > 0){
+      csv += `${act},${val}\n`;
+    }
+  });
+
+  if(csv.trim() === "Activity,Quantity"){
+    alert("Please enter at least one activity value.");
+    return;
+  }
+
+  // Save CSV for dashboard
+  localStorage.setItem("activityDataCSV", csv);
+
+  // Save industry
+   
+  localStorage.setItem("industry", document.getElementById("industry").value);
+
+  // Optional: save month (for future use)
+  const month = document.getElementById("month").value;
+  localStorage.setItem("selectedMonth", month);
+
+  const company = document.getElementById("company").value;
+  localStorage.setItem("company", company);
+
+
+  // Redirect
+  window.location.href = "dashboard.html";
+}
+window.onload = function () {
+  renderActivities();
+  loadCompanies();
+};
+
+
+</script>
+
+</body>
+</html>

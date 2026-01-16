@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Upload Activity Data — Carbon Audit</title>
+
+<style>
+/* INTERNAL CSS for upload.html (clean & modern) */
+:root{
+  --bg1: linear-gradient(135deg,#74b9ff,#0984e3);
+  --card:#fff;
+  --accent:#0984e3;
+  --soft:#f1f8ff;
+  --muted:#556;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Arial;}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg1);
+  padding:24px;
+}
+
+.container{
+  width:430px;
+  border-radius:14px;
+  background:var(--card);
+  box-shadow:0 12px 30px rgba(12,40,80,0.18);
+  overflow:hidden;
+  animation:pop .45s ease;
+}
+
+header{
+  padding:22px;
+  background:linear-gradient(90deg, rgba(9,132,227,0.08), rgba(31,122,140,0.04));
+}
+h1{margin:0;font-size:20px;color:#16324a}
+p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+.main{
+  padding:20px;
+}
+
+.upload-box{
+  border:2px dashed rgba(9,132,227,0.22);
+  background:var(--soft);
+  border-radius:10px;
+  padding:16px;
+  text-align:center;
+}
+
+.upload-box input,
+.upload-box select{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+
+.row{display:flex;gap:12px;margin-top:14px}
+.btn{
+  flex:1;
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:11px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+.btn.secondary{background:#eee;color:#123}
+
+.preview{
+  margin-top:14px;
+  max-height:160px;
+  overflow:auto;
+  border-radius:8px;
+  border:1px solid #f0f5fb;
+  padding:10px;
+  font-size:13px;
+  background:#fff;
+}
+
+.note{font-size:12px;color:#556;margin-top:8px}
+
+footer{
+  padding:10px 20px;
+  text-align:center;
+  font-size:12px;
+  color:#3b3b3b;
+  background:#fbfdff;
+}
+
+/* ================================
+   Smooth Upload Page Animations
+================================ */
+
+/* Container pop animation (FIXED) */
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Upload box hover smoothness */
+.upload-box {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.upload-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+
+/* Button smooth hover */
+.btn {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+/* Preview fade-in */
+.preview {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Reusable fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <header>
+    <h1>Industrial Carbon Audit</h1>
+    <p class="lead">Upload CSV & select industry type</p>
+  </header>
+
+  <div class="main">
+
+    <!-- Industry Selection -->
+    <div class="upload-box">
+    <label><strong>Select Industry Type</strong></label>
+    <select id="industrySelect" onchange="loadCompanies()">
+      <option value="">-- Select Industry --</option>
+      <option value="textile">Textile Industry</option>
+      <option value="car-care">Car Care Products Industry</option>
+      <option value="chemical">Chemical Industry</option>
+    </select>
+
+    <label style="margin-top:10px;"><strong>Select Company</strong></label>
+    <select id="companySelect"></select>
+  </div>
+
+
+    <!-- CSV Upload -->
+    <div class="upload-box" style="margin-top:14px;">
+      <div><strong>Select CSV File</strong></div>
+      <input id="csvInput" type="file" accept=".csv">
+      <div class="note">CSV must include: Activity, Quantity, Unit</div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="btnPreview">Preview CSV</button>
+      <button class="btn" id="btnGo">Calculate & Open Dashboard</button>
+    </div>
+
+    <div id="preview" class="preview" hidden></div>
+
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button class="btn secondary" id="loadSample">Load Sample CSV</button>
+      <button class="btn secondary" id="clearStorage">Clear Data</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+const csvInput = document.getElementById('csvInput');
+const previewDiv = document.getElementById('preview');
+const industrySelect = document.getElementById('industrySelect');
+
+const defaultCompanies = {
+  textile: ["Garware Technical Fibres Limited", "Century Enka Ltd", "Banthia Enterprises"],
+  chemical: ["Tata Chemicals", "Pidilite", "UPL Limited"],
+  "car-care": ["Jopasu India Pvt. Ltd. "]
+};
+
+function loadCompanies() {
+  const industry = industrySelect.value;
+  const companySelect = document.getElementById("companySelect");
+
+  if (!industry) {
+    companySelect.innerHTML = "";
+    return;
+  }
+
+  let savedCompanies = JSON.parse(localStorage.getItem("companies")) || {};
+  let companies = savedCompanies[industry] || defaultCompanies[industry] || [];
+
+  companySelect.innerHTML = "";
+
+  companies.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    companySelect.appendChild(opt);
+  });
+
+  const addOpt = document.createElement("option");
+  addOpt.value = "__add__";
+  addOpt.textContent = "➕ Add New Company";
+  companySelect.appendChild(addOpt);
+}
+
+document.getElementById("companySelect").onchange = function () {
+  if (this.value === "__add__") {
+    const name = prompt("Enter new company name:");
+    if (!name) {
+      loadCompanies();
+      return;
+    }
+
+    const industry = industrySelect.value;
+    let saved = JSON.parse(localStorage.getItem("companies")) || {};
+    if (!saved[industry]) saved[industry] = [];
+    saved[industry].push(name);
+
+    localStorage.setItem("companies", JSON.stringify(saved));
+    loadCompanies();
+    this.value = name;
+  }
+};
+
+
+document.getElementById('btnPreview').onclick = () => {
+  const f = csvInput.files[0];
+  if(!f){ alert("Please select a CSV file"); return; }
+  Papa.parse(f, {
+    header:true,
+    skipEmptyLines:true,
+    complete:(res)=> showPreview(res.data)
+  });
+};
+
+document.getElementById('btnGo').onclick = () => {
+  const industry = industrySelect.value;
+  if(!industry){
+    alert("Please select an industry");
+    return;
+  }
+  const file = csvInput.files[0];
+  if(!file){
+    alert("Please upload a CSV file");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    localStorage.setItem("activityDataCSV", e.target.result);
+    const company = document.getElementById("companySelect").value;
+    localStorage.setItem("industry", industry);
+    localStorage.setItem("company", company);
+    window.location.href = "dashboard.html";
+
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById('loadSample').onclick = ()=>{
+//   const sample = `Activity,Quantity,Unit
+// Electricity,25000,kWh
+// Diesel,1500,L
+// Steam,4200,kg
+// TextileWaste,550,kg`;
+//   localStorage.setItem("activityDataCSV", sample);
+//   localStorage.setItem("industryType", "textile");
+//   Papa.parse(sample,{header:true,complete:r=>showPreview(r.data)});
+
+const industry = document.getElementById('industrySelect').value;
+
+  // 1. Check if an industry is selected before loading sample data
+  if (!industry) {
+    alert("Please select an industry type first to load the relevant sample data.");
+    return;
+  }
+
+  // 2. Define data for each industry type
+  const sampleDataMap = {
+    textile: `Activity,Quantity,Unit
+      Electricity,25000,kWh
+      Diesel,1500,L
+      Steam,4200,kg
+      TextileWaste,550,kg`,
+
+          chemical: `Activity,Quantity,Unit
+      Electricity,45000,kWh
+      NaturalGas,3200,SCM
+      Solvent,800,kg
+      HazardousWaste,200,kg`,
+
+          "car-care": `Activity,Quantity,Unit
+      Electricity,12000,kWh
+      CompressedAir,500,Unit
+      FilterWaste,150,kg`
+    };
+
+  const sample = sampleDataMap[industry];
+
+  // 3. Save to localStorage and update preview
+  localStorage.setItem("activityDataCSV", sample);
+  localStorage.setItem("industry", industry); 
+  
+  Papa.parse(sample, {
+    header: true,
+    complete: (results) => showPreview(results.data)
+  });
+
+  alert(`Sample data for ${industry} industry loaded successfully!`);
+};
+
+function showPreview(rows){
+  if(!rows || rows.length===0){ previewDiv.innerText="No data"; return; }
+  let html="<table style='width:100%;border-collapse:collapse'>";
+  html+="<tr>"+Object.keys(rows[0]).map(h=>`<th style='border-bottom:1px solid #ddd'>${h}</th>`).join("")+"</tr>";
+  rows.forEach(r=>{
+    html+="<tr>"+Object.values(r).map(v=>`<td style='padding:4px'>${v}</td>`).join("")+"</tr>";
+  });
+  html+="</table>";
+  previewDiv.innerHTML=html;
+  previewDiv.hidden=false;
+}
+industrySelect.addEventListener("change", loadCompanies);
+
+</script>
+</body>
+</html>

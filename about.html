@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About • Carbon Emission Audit</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --primary:#1f78d1;   /* same as homepage */
+      --green:#21b46b;
+      --purple:#8e44ad;
+      --muted:#555;
+      --card:#ffffff;
+      --radius:12px;
+      --max-width:1000px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Top header */
+    header{
+      background:var(--primary);
+      color:white;
+      padding:20px;
+      text-align:center;
+      font-size:22px;
+      font-weight:700;
+    }
+
+    /* Main container */
+    .wrap{ max-width:var(--max-width); margin:28px auto; padding:18px; }
+
+    /* Navigation buttons (same look as homepage) */
+    .nav {
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+    .btn {
+      padding:14px 26px;
+      border-radius:30px;
+      border:none;
+      color:#fff;
+      font-size: 18px;
+      /* font-weight:600; */
+      cursor:pointer;
+      transition: transform .18s, opacity .18s;
+    }
+    .btn:hover{ transform: translateY(-3px); opacity:.92; }
+    .btn.data{ background:var(--green); }
+    .btn.about{ background:var(--purple); }
+
+    /* Hero card */
+    .hero {
+      background:var(--card);
+      padding:20px;
+      border-radius:var(--radius);
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);
+      text-align:left;
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    .hero h1{ margin:0 0 6px 0; font-size:20px; color:var(--primary) }
+    .hero p{ margin:0; color:var(--muted) }
+
+    /* Grid of content cards */
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+      margin-top:20px;
+    }
+    .card {
+      background:var(--card);
+      padding:18px;
+      border-radius:10px;
+      box-shadow:0 6px 16px rgba(0,0,0,0.06);
+    }
+    h2{ color:var(--primary); margin-top:0; }
+    p, li{ color:var(--muted); line-height:1.7; }
+
+    /* Footer */
+    footer{
+      margin-top:28px;
+      text-align:center;
+      padding:18px 10px;
+      color:#fff;
+      background:#111;
+      border-radius:10px;
+    }
+
+    /* Small helpers */
+    .back { display:inline-block; margin-bottom:12px; color:var(--primary); text-decoration:none; font-weight:600; }
+    @media (max-width:520px){
+      .hero{ flex-direction:column; text-align:left; }
+    }
+
+    /* ================================
+       About Page Smooth Animations
+       ================================ */
+
+  /* Page fade-in */
+  body {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  /* Header slide-down */
+  header {
+    animation: slideDown 0.7s ease-in-out;
+  }
+
+  /* Hero animation */
+  .hero {
+    animation: slideUp 0.7s ease-in-out;
+  }
+
+  /* Cards animation + hover */
+  .card {
+    animation: slideUp 0.8s ease-in-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+
+  /* Footer fade */
+  footer {
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .main-footer {
+  background: #111;
+  color: #fff;
+  padding: 40px 0 20px 0;
+  margin-top: 50px;
+  border-radius: 12px 12px 0 0; /* Match card radius at the top */
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+
+  .footer-section {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .footer-section h3 {
+    color: var(--primary); /* Use the primary blue for headers */
+    font-size: 18px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+  }
+
+  .footer-section p, .team-list li {
+    color: #bbb;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .team-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .footer-nav a {
+    display: block;
+    color: #bbb;
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+
+  .footer-nav a:hover {
+    color: var(--primary);
+  }
+
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    font-size: 12px;
+    color: #777;
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    .footer-section h3 {
+      border-bottom: none;
+    }
+  }
+
+  .home-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  padding: 5px 22px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  }
+
+  .home-btn:hover {
+    background: white;
+    color: var(--primary); /* Uses your existing blue variable */
+    border-color: white;
+  }
+
+  header {
+  background: var(--primary);
+  color: white;
+  padding: 20px 18px; /* Adjusted padding for better spacing */
+  text-align: left; /* Changed from center to align with the new flex layout */
+  }
+
+  /* Keyframes */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+    </style>
+</head>
+<body>
+
+  <header>
+    <!-- Industrial Carbon Emission Audit -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start; max-width: 1000px; margin: auto 140px; gap: 8px;">
+    <span style="font-weight: bold; font-size: 22px;">Industrial Carbon Emission Audit</span>
+    <a href="index.html" class="home-btn">Home</a>
+  </div>
+  </header>
+
+  <div class="wrap">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="about-heading">
+      <div style="flex:1">
+        <h1 id="about-heading">About this Project</h1>
+        <p>Simple, practical carbon emission audit template tailored for the textile, chemical, and car-care product industries. This page explains objectives, method, and how to use the site.</p>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <div class="grid">
+
+      <div class="card">
+        <h2>Overview</h2>
+        <p>
+          The Carbon Emission Audit helps identify, quantify and analyse Carbon Emissions across textile and chemical industries. It covers:
+        </p>
+        <ul>
+          <li>Fuel combustion (boilers, furnaces)</li>
+          <li>Electricity usage for processes</li>
+          <li>Scope-based emission classification (Scope 1 & Scope 2)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Mission</h2>
+          <p>
+            To assist textile chemical domain industries in measuring their carbon footprint and suggesting cost-effective reduction opportunities — improving sustainability while maintaining productivity.
+          </p>
+      </div>
+
+      <div class="card">
+        <h2>Objectives</h2>
+        <ul>
+          <li>Provide a clear emissions breakdown (Scope 1 / 2 )</li>
+          <li>Automate the conversion of raw activity data into accurate CO₂e reports using standard emission factors.</li>
+          <li>Offer actionable recommendations</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Methodology</h2>
+        <p>
+          The project aims to establish a standardized carbon auditing framework for the textile, chemical, and car-care industries by automating activity-to-CO₂e conversion to provide visual insights and actionable mitigation strategies.        </p>
+      </div>
+
+      <div class="card">
+      <h2>Global Impact</h2>
+      <p>Our audit portal is designed to help industries meet international regulatory and sustainability standards:</p>
+      <ul>
+        <li><strong>ESG Transparency:</strong> Simplifies environmental reporting for stakeholders and investors.</li>
+        <li><strong>Climate Action:</strong> Directly contributes to UN Sustainable Development Goal 13 (Climate Action).</li>
+        <li><strong>Net-Zero 2070:</strong> Supports India's national commitment to total carbon neutrality.</li>
+      </ul>
+    </div>
+
+      <div class="card">
+        <h2>How To Use</h2>
+        <p>
+          <ul>
+            <li>Go to <strong>Data</strong> to upload or view CSV records.</li>
+            <li>Open <strong>Carbon Audit</strong> to see results and suggested interventions.</li>
+            <li>Use this About page to understand purpose and process.</li>
+          </ul>
+        </p>
+      </div>
+    </div> <!-- /grid -->
+
+    <footer class="main-footer">
+  <div class="wrap footer-content">
+    
+    <div class="footer-section">
+      <h3>Contact Us</h3>
+      <p><strong>Group Leader:</strong> Tanishq Tadas</p>
+      <p><strong>Email:</strong> <a style="color:white" href="mailto:tanishq.1251130046@vit.edu">tanishq.1251130046@vit.edu</a></p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Project Team</h3>
+      <ul class="team-list">
+        <li>Swarali Salunkhe</li>
+        <li>Yash Suwarnkar</li>
+        <li>Swayam Chhatre</li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <nav class="footer-nav">
+        <a href="index.html">Home</a>
+        <a href="upload.html">Data Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+    
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Carbon Emission Audit Project 
+  </div>
+</footer>
+
+  </div> <!-- /wrap -->
+
+</body>
+</html>
